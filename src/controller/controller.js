@@ -8,7 +8,7 @@ export class Controller {
         this.view = new View();
     }
 
-    addProductToStore(name, price, units) {
+    addProductToStore(code, name, price, units) {
         if (!name) {
             this.view.renderErrorMessage("Error: name cannot be empty");
             return false;
@@ -30,8 +30,8 @@ export class Controller {
             return false;
         }
 
-        let newProduct = this.store.addProduct(name, price);
-        this.store.changeProductUnits(newProduct.id, units);
+        let newProduct = this.store.addProduct(code, name, price);
+        this.store.changeProductUnits(newProduct.code, units);
 
         this.view.renderNewProduct(newProduct);
         this.view.renderStoreImport(this.store.totalImport());
@@ -39,10 +39,8 @@ export class Controller {
         return newProduct;
     }
     
-    deleteProductFromStore(id) {
-        id = this.#normalizeId(id);
-
-        let deletedProduct = this.store.findProduct(id);
+    deleteProductFromStore(code) {
+        let deletedProduct = this.store.findProduct(code);
 
         if (!deletedProduct) {
             this.view.renderErrorMessage("Error: this product is not in the store.");
@@ -50,40 +48,38 @@ export class Controller {
             return false;
         }
 
-        if (!confirm(`Do you want to delete product with ID: ${deletedProduct.id} and name: ${deletedProduct.name}?`)) {
-            this.view.renderErrorMessage(`Unable to remove product with ID: ${id} from store`);
+        if (!confirm(`Do you want to delete product with code: ${deletedProduct.code} and name: ${deletedProduct.name}?`)) {
+            this.view.renderErrorMessage(`Unable to remove product with ID: ${code} from store`);
             return false;
         }
 
         if (deletedProduct.units > 0) {
             if (!confirm(`${deletedProduct.units} units will be deleted. Do you want to continue?`)) {
-                this.view.renderErrorMessage(`Unable to remove product with ID: ${id} from store`);
+                this.view.renderErrorMessage(`Unable to remove product with ID: ${code} from store`);
                 return false;
             }
 
-            this.store.changeProductUnits(id, -deletedProduct.units);
+            this.store.changeProductUnits(code, -deletedProduct.units);
         } 
 
             
-        this.store.delProduct(id);
+        this.store.delProduct(code);
 
-        this.view.renderDelProduct(id);
+        this.view.renderDelProduct(code);
         this.view.renderStoreImport(this.store.totalImport());
         
         return deletedProduct;
         
     }
 
-    changeProductStock(id, units) {
-        id = this.#normalizeId(id);
-
+    changeProductStock(code, units) {
         if (!Number.isInteger(units)) {
             this.view.renderErrorMessage("Error: units must be an integer number");
 
             return false;
         }
 
-        let modifiedProduct = this.store.findProduct(id);
+        let modifiedProduct = this.store.findProduct(code);
 
         if (!modifiedProduct) {
             this.view.renderErrorMessage("Error: this product is not in the store.");
@@ -97,7 +93,7 @@ export class Controller {
             return false;
         }
 
-        this.store.changeProductUnits(id, units);
+        this.store.changeProductUnits(code, units);
 
         this.view.renderChangeStock(modifiedProduct);
         this.view.renderStoreImport(this.store.totalImport());
@@ -112,9 +108,7 @@ export class Controller {
      * almacén y que se muestren en la tabla esos cambios.
      */
 
-    changeProductInStore(id, name, price, units) {
-        id = this.#normalizeId(id);
-
+    changeProductInStore(code, name, price, units) {
         if (!name) {
             this.view.renderErrorMessage("Error: name cannot be empty");
             return false;
@@ -130,14 +124,14 @@ export class Controller {
             return false;
         }
 
-        let modifiedProduct = this.store.findProduct(id);
+        let modifiedProduct = this.store.findProduct(code);
 
         if (!modifiedProduct) {
             this.view.renderErrorMessage("Error: this product is not in the store.");
             return false;
         }
 
-        this.store.editProduct(id, name, price, units);
+        this.store.editProduct(code, name, price, units);
         
         this.view.renderEditProduct(modifiedProduct);
         this.view.renderStoreImport(this.store.totalImport());
@@ -153,12 +147,12 @@ export class Controller {
         formHeading.textContent = "Editar producto";
         button.textContent = "Cambiar";
         
-        document.getElementById("prod-id").value = element.dataset.id;
+        document.getElementById("prod-code").value = element.dataset.code;
         document.getElementById("prod-name").value = element.dataset.name;
         document.getElementById("prod-price").value = element.dataset.price;
         document.getElementById("prod-uds").value = element.dataset.units;
 
-        form.dataset.id = document.getElementById("prod-id").value;
+        form.dataset.code = document.getElementById("prod-code").value;
         form.dataset.name = document.getElementById("prod-name").value;
         form.dataset.price = document.getElementById("prod-price").value;
         form.dataset.units = document.getElementById("prod-uds").value;
@@ -177,18 +171,4 @@ export class Controller {
         button.classList.remove("edit-product");
         button.classList.add("add-product");
     }
-    
-    #normalizeId(id) {
-        const numericId = Number(id);
-
-        if (!Number.isInteger(numericId) || numericId < 0) {
-            this.view.renderErrorMessage("Error: ID must be a positive integer");
-            return false;
-        }
-
-        return numericId;
-    }
-
-
-    
 }

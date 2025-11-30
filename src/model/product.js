@@ -1,24 +1,18 @@
-export class Product {
-    static #idCounter = 1;
-    
-    #id;
+export class Product {    
+    #code;
     #name;
     #price;
     #units;
 
-    constructor(name, price, units = 0) {
-        this.#id = Product.#idCounter ++;
+    constructor(code, name, price, units = 0) {
+        this.#code = code;
         this.#name = name;
         this.#price = price;
         this.#units = Math.trunc(units);
     }
 
-    static get idCounter() {
-        return Product.#idCounter;
-    }
-
-    get id() {
-        return this.#id;
+    get code() {
+        return this.#code;
     }
 
     get name() {

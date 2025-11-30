@@ -24,34 +24,33 @@ export class Store {
     }
 
 
-    findProduct(id) {
-        const searchId = Number(id);
-        return this.#products.find(product => product.id == searchId);
+    findProduct(code) {
+        return this.#products.find(product => product.code === code);
     }
 
-    addProduct(name, price) {    
-        const product = new Product(name, price);
+    addProduct(code, name, price) {    
+        const product = new Product(code, name, price);
         this.#products.push(product);
 
         return product;
     }
 
-    delProduct(id) {
-        const product = this.findProduct(id);
+    delProduct(code) {
+        const product = this.findProduct(code);
         const index = this.#products.indexOf(product);
         
         return this.#products.splice(index, 1)[0];
     }
 
-    changeProductUnits(id, units) {
-        const product = this.findProduct(id);
+    changeProductUnits(code, units) {
+        const product = this.findProduct(code);
         product.changeUnits(units);
 
         return product;
     }
 
-    editProduct(id, name, price, units) {
-        const product = this.findProduct(id);
+    editProduct(code, name, price, units) {
+        const product = this.findProduct(code);
         product.name = name;
         product.price = price;
         product.units = units;

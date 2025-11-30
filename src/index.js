@@ -38,23 +38,24 @@ if (tbody) {
 function addNewProduct(event) {
     event.preventDefault();
 
+    const code = document.getElementById("prod-code").value;
     const name = document.getElementById("prod-name").value;
     const price = Number(document.getElementById("prod-price").value);
     const units = Number(document.getElementById("prod-uds").value);
 
-    storeApp.addProductToStore(name, price, units);
+    storeApp.addProductToStore(code, name, price, units);
     form.reset();
 }
 
 function editProduct(event) {
     event.preventDefault();
 
-    const id = document.getElementById("prod-id").value;
+    const code = document.getElementById("prod-code").value;
     const name = document.getElementById("prod-name").value;
     const price = Number(document.getElementById("prod-price").value);
     const units = Number(document.getElementById("prod-uds").value);
 
-    storeApp.changeProductInStore(id, name, price, units);
+    storeApp.changeProductInStore(code, name, price, units);
     form.reset();
     storeApp.loadAddForm();
 }
@@ -71,6 +72,7 @@ function showIcons(event) {
     actionButtons.forEach(button => {
         if (event.type === "mouseover") {
             button.classList.remove("invisible");
+            
         } else if (event.type === "mouseout") {
             button.classList.add("invisible")
         }
