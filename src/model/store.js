@@ -50,6 +50,15 @@ export class Store {
         return product;
     }
 
+    editProduct(id, name, price, units) {
+        const product = this.findProduct(id);
+        product.name = name;
+        product.price = price;
+        product.units = units;
+
+        return product;
+    }
+
     totalImport() {
         const total = this.#products.reduce((sum, product) => sum += product.productImport(), 0); 
 

@@ -8,13 +8,18 @@ export class Controller {
         this.view = new View();
     }
 
-    addProductToStore(name, price) {
+    addProductToStore(name, price, units) {
         if (!name) {
             this.view.renderErrorMessage("Error: name cannot be empty");
             return false;
         } 
         if (!Number.isFinite(price) || price < 0) {
             this.view.renderErrorMessage("Error: price must be a non-negative number.");
+            return false;
+        }
+
+        if (!Number.isInteger(units)) {
+            this.view.renderErrorMessage("Error: units must be an integer number");
             return false;
         }
 
@@ -26,6 +31,7 @@ export class Controller {
         }
 
         let newProduct = this.store.addProduct(name, price);
+        this.store.changeProductUnits(newProduct.id, units);
 
         this.view.renderNewProduct(newProduct);
         this.view.renderStoreImport(this.store.totalImport());
@@ -99,6 +105,79 @@ export class Controller {
         return modifiedProduct;
     }
 
+    /**
+     * changeProductInStore: 
+     * recibe un objeto con la id del producto a modificar y las propiedades del mismo que 
+     * deseamos modificar (las no incluidas permanecerán inalteradas). Se encarga de modificar el producto en el 
+     * almacén y que se muestren en la tabla esos cambios.
+     */
+
+    changeProductInStore(id, name, price, units) {
+        id = this.#normalizeId(id);
+
+        if (!name) {
+            this.view.renderErrorMessage("Error: name cannot be empty");
+            return false;
+        }
+
+        if (!Number.isFinite(price) || price < 0) {
+            this.view.renderErrorMessage("Error: price must be a non-negative number.");
+            return false;
+        }
+
+        if (!Number.isInteger(units)) {
+            this.view.renderErrorMessage("Error: units must be an integer number");
+            return false;
+        }
+
+        let modifiedProduct = this.store.findProduct(id);
+
+        if (!modifiedProduct) {
+            this.view.renderErrorMessage("Error: this product is not in the store.");
+            return false;
+        }
+
+        this.store.editProduct(id, name, price, units);
+        
+        this.view.renderEditProduct(modifiedProduct);
+        this.view.renderStoreImport(this.store.totalImport());
+
+        return modifiedProduct;
+    }
+
+    loadEditForm(element) {
+        const formHeading = document.getElementById("form-title");
+        const button = document.querySelector("button[type='button']");
+        const form = document.getElementById("form-prod");
+
+        formHeading.textContent = "Editar producto";
+        button.textContent = "Cambiar";
+        
+        document.getElementById("prod-id").value = element.dataset.id;
+        document.getElementById("prod-name").value = element.dataset.name;
+        document.getElementById("prod-price").value = element.dataset.price;
+        document.getElementById("prod-uds").value = element.dataset.units;
+
+        form.dataset.id = document.getElementById("prod-id").value;
+        form.dataset.name = document.getElementById("prod-name").value;
+        form.dataset.price = document.getElementById("prod-price").value;
+        form.dataset.units = document.getElementById("prod-uds").value;
+
+        button.classList.remove("add-product");
+        button.classList.add("edit-product");
+    }
+
+    loadAddForm() {
+        const formHeading = document.getElementById("form-title");
+        const button = document.querySelector("button[type='button']");
+
+        formHeading.textContent = "Nuevo producto";
+        button.textContent = "Añadir";
+
+        button.classList.remove("edit-product");
+        button.classList.add("add-product");
+    }
+    
     #normalizeId(id) {
         const numericId = Number(id);
 
@@ -111,4 +190,5 @@ export class Controller {
     }
 
 
+    
 }

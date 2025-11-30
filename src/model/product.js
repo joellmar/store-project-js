@@ -25,12 +25,24 @@ export class Product {
         return this.#name;
     }
 
+    set name(name) {
+        this.#name = name;
+    }
+
     get price() {
         return this.#price;
     }
 
+    set price(price) {
+        this.#price = price;
+    }
+
     get units() {
         return this.#units;
+    }
+
+    set units(units) {
+        this.#units = units;
     }
 
     changeUnits(units) {
