@@ -15,31 +15,35 @@
         <h1 class="m-3 text-primary-emphasis">Walmart-os</h1>
     
         <div class="row"> 
-            <form class="col border border-dark m-3 p-3" name="prod" id="form-prod">
+            <form class="col border border-dark m-3 p-3 needs-validation" name="prod" id="form-prod" novalidate>
                 <h4 id="form-title" class="text mb-3">Nuevo producto</h4>
 
                 <div class="form-floating mb-3">
                     <input type="text" class="form-control border-primary" id="prod-code" placeholder="Código" pattern="^[A-Z]{3}-[0-9]{4}$" required>
                     <label for="prod-code" class="form-label">Código</label>
+                    <div class="invalid-feedback"></div>
                 </div> 
 
                 <div class="form-floating mb-3"> 
                     <input type="text" class="form-control border-primary" id="prod-name" placeholder="Nombre" minlength="5" maxlength="25" required>
                     <label for="prod-name" class="form-label">Nombre</label>
+                    <div class="invalid-feedback"></div>
                 </div>
 
                 <div class="form-floating mb-3">
                     <input type="number" class="form-control border-primary" id="prod-price" placeholder="Precio" min="0" max="999.99" step="0.01" required>
                     <label for="prod-price" class="form-label">Precio</label> 
+                    <div class="invalid-feedback"></div>
                 </div>
 
                 <div class="form-floating mb-3">
                     <input type="number" class="form-control border-primary" id="prod-uds" placeholder="Unidades" min="0" max="100" required>
                     <label for="prod-uds" class="form-label">Unidades</label>
+                    <div class="invalid-feedback"></div>
                 </div> 
 
                 <div class="">
-                    <button type="button" class="me-2 col-3 p-3 btn btn-primary border-primary add-product">Añadir</button> 
+                    <button type="submit" class="me-2 col-3 p-3 btn btn-primary border-primary add-product">Añadir</button> 
                     <button type="reset" class="me-2 col-3 p-3 btn btn-secondary">Reset</button>
                 </div>
             </form>

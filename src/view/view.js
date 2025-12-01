@@ -78,15 +78,6 @@ export class View {
         this.#total.classList.remove("invisible");
         const importCell = this.#total.querySelector("tr td");
         importCell.textContent = totalImport + " €";
-
-        // const totalImportMessage = document.createElement("div");
-
-        // totalImportMessage.classList.add("alert", "alert-info");
-        // totalImportMessage.setAttribute("role", "alert");
-        // totalImportMessage.innerHTML = `<span>Total import: ${totalImport} €</span>`;
-
-        // const childNode = this.#total.firstChild;
-        // this.#total.replaceChild(totalImportMessage, childNode);
     }
 
     renderErrorMessage(text) {
@@ -104,5 +95,20 @@ export class View {
 
         errorMessage.append(textSpan, closeButton);
         this.#messages.append(errorMessage);
+    }
+
+    renderValidationMessage(input, errorMessage) {
+        const feedbackDiv = input.parentElement.querySelector(".invalid-feedback");
+        input.classList.remove("border-primary");
+
+        if (errorMessage) {
+            input.classList.remove("is-valid");
+            input.classList.add("is-invalid");
+            feedbackDiv.textContent = errorMessage;
+        } else {
+            input.classList.remove("is-invalid");
+            input.classList.add("is-valid");
+            feedbackDiv.textContent = "";
+        }
     }
 }

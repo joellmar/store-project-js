@@ -1,4 +1,3 @@
-import { Product } from "../model/product.js";
 import {Store} from "../model/store.js";
 import {View} from "../view/view.js";
 
@@ -9,20 +8,6 @@ export class Controller {
     }
 
     addProductToStore(code, name, price, units) {
-        if (!name) {
-            this.view.renderErrorMessage("Error: name cannot be empty");
-            return false;
-        } 
-        if (!Number.isFinite(price) || price < 0) {
-            this.view.renderErrorMessage("Error: price must be a non-negative number.");
-            return false;
-        }
-
-        if (!Number.isInteger(units)) {
-            this.view.renderErrorMessage("Error: units must be an integer number");
-            return false;
-        }
-
         const existingProduct = this.store.products.find(product => product.name.toLowerCase() === name.toLowerCase());
 
         if(existingProduct) {
@@ -73,12 +58,6 @@ export class Controller {
     }
 
     changeProductStock(code, units) {
-        if (!Number.isInteger(units)) {
-            this.view.renderErrorMessage("Error: units must be an integer number");
-
-            return false;
-        }
-
         let modifiedProduct = this.store.findProduct(code);
 
         if (!modifiedProduct) {
@@ -101,29 +80,8 @@ export class Controller {
         return modifiedProduct;
     }
 
-    /**
-     * changeProductInStore: 
-     * recibe un objeto con la id del producto a modificar y las propiedades del mismo que 
-     * deseamos modificar (las no incluidas permanecerán inalteradas). Se encarga de modificar el producto en el 
-     * almacén y que se muestren en la tabla esos cambios.
-     */
-
     changeProductInStore(code, name, price, units) {
-        if (!name) {
-            this.view.renderErrorMessage("Error: name cannot be empty");
-            return false;
-        }
-
-        if (!Number.isFinite(price) || price < 0) {
-            this.view.renderErrorMessage("Error: price must be a non-negative number.");
-            return false;
-        }
-
-        if (!Number.isInteger(units)) {
-            this.view.renderErrorMessage("Error: units must be an integer number");
-            return false;
-        }
-
+       
         let modifiedProduct = this.store.findProduct(code);
 
         if (!modifiedProduct) {
@@ -141,7 +99,7 @@ export class Controller {
 
     loadEditForm(element) {
         const formHeading = document.getElementById("form-title");
-        const button = document.querySelector("button[type='button']");
+        const button = document.querySelector("button[type='submit']");
         const form = document.getElementById("form-prod");
 
         formHeading.textContent = "Editar producto";
@@ -163,12 +121,47 @@ export class Controller {
 
     loadAddForm() {
         const formHeading = document.getElementById("form-title");
-        const button = document.querySelector("button[type='button']");
+        const button = document.querySelector("button[type='submit']");
 
         formHeading.textContent = "Nuevo producto";
         button.textContent = "Añadir";
 
         button.classList.remove("edit-product");
         button.classList.add("add-product");
+    }
+
+    validateField(input) {
+        let message = null
+
+        if (input.validity.valueMissing) {
+            
+            message = "El campo es obligatorio";
+        }
+
+        if (input.validity.patternMismatch) {
+            message = "El valor introducido no cumple con lo pedido";
+        }
+
+        if (input.validity.rangeUnderflow) {
+            message = "El valor mínimo es 0";
+        }
+
+        if (input.id === "prod-price" && input.validity.rangeOverflow) {
+            message = "El valor máximo es 999.99";
+        }
+
+        if (input.id === "prod-uds" && input.validity.rangeOverflow) {
+            message = "El valor máximo es 100";
+        }
+
+        if (input.validity.tooShort) {
+            message = "Debes introducir al menos 5 caracteres";
+        }
+
+        if (input.validity.tooLong) {
+            message = "Debes introducir como máximo 25 caracteres";
+        }
+
+        this.view.renderValidationMessage(input, message);
     }
 }

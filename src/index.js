@@ -2,29 +2,52 @@ import {Controller} from "./controller/controller.js";
 
 const storeApp = new Controller();
 const form = document.getElementById("form-prod");
-const submitButton = document.querySelector("button[type='button']");
+
+const submitButton = document.querySelector("button[type='submit']");
 const resetButton = document.querySelector("button[type='reset']");
+const inputs = document.querySelectorAll("input");
 
-submitButton.addEventListener("click", (event) => {
-    if (event.target.classList.contains("add-product")) {
-        addNewProduct(event);
-    }
+// -- EVENTOS PRINCIPALES -- 
 
-    if (event.target.classList.contains("edit-product")) {
-        editProduct(event);
-    }
-});
+// 1. Un único listener para el envío de datos (añadir o editar)
+/**
+ * * "Submit" es un evento semántico (a diferencia de click), quiere decir que se envía el formulario. 
+ * * El navegador sabe que se puede hacer de muchas formas (como pulsando Enter).
+ * 
+ */
+form.addEventListener("submit", (event) => {
 
-resetButton.addEventListener("click", (event) => {
+    // Detenemos el envío real para que no recargue la página
     event.preventDefault();
 
-    if (submitButton.classList.contains("edit-product")) {
-        storeApp.loadEditForm(form);
+    if (!validateForm()) {
+        return;
+    }
 
-    } else {
-        form.reset();
+    // Determinamos si se añade o edita producto según la clase del botón
+    if (submitButton.classList.contains("add-product")) {
+        handleAddProduct(event);
+    }
+
+    if (submitButton.classList.contains("edit-product")) {
+        handleEditProduct(event);
     }
 });
+
+// Listener para el reset
+form.addEventListener("reset", (event) => {
+    // Si el formulario está en modo edición, cargamos los valores del producto en el form.
+    if (submitButton.classList.contains("edit-product")) {
+        event.preventDefault();
+        storeApp.loadEditForm(form);
+    }
+});
+
+inputs.forEach(input => 
+    input.addEventListener("blur", (event) => 
+        storeApp.validateField(event.target)
+    )
+);  
 
 const tbody = document.querySelector("#store tbody");
 
@@ -34,30 +57,47 @@ if (tbody) {
     tbody.addEventListener("click", activateButton);
 }
 
+// FUNCIONES AUXILIARES
 
-function addNewProduct(event) {
-    event.preventDefault();
+function validateForm() {
+    inputs.forEach(input => storeApp.validateField(input));
 
-    const code = document.getElementById("prod-code").value;
-    const name = document.getElementById("prod-name").value;
-    const price = Number(document.getElementById("prod-price").value);
-    const units = Number(document.getElementById("prod-uds").value);
+    return form.checkValidity();
+}
 
+function handleAddProduct() {
+    const {code, name, price, units} = getFormData();
     storeApp.addProductToStore(code, name, price, units);
+    
+    inputs.forEach(input => {
+        input.classList.remove("is-valid");
+        input.classList.add("border-primary");
+    });
+
     form.reset();
 }
 
-function editProduct(event) {
-    event.preventDefault();
-
-    const code = document.getElementById("prod-code").value;
-    const name = document.getElementById("prod-name").value;
-    const price = Number(document.getElementById("prod-price").value);
-    const units = Number(document.getElementById("prod-uds").value);
-
+function handleEditProduct() {
+    const {code, name, price, units} = getFormData();
     storeApp.changeProductInStore(code, name, price, units);
-    form.reset();
+    
+    inputs.forEach(input => {
+        input.classList.remove("is-valid");
+        input.classList.add("border-primary");
+    });
+    
     storeApp.loadAddForm();
+    form.reset();
+}
+
+// lectura de datos del DOM sin repetir código
+function getFormData() {
+    return {
+        code: document.getElementById("prod-code").value,
+        name: document.getElementById("prod-name").value,
+        price: Number(document.getElementById("prod-price").value),
+        units: Number(document.getElementById("prod-uds").value)
+    };
 }
 
 function showIcons(event) {
@@ -84,16 +124,16 @@ function activateButton(event) {
     if (!actionButton) return;
 
     const affectedRow = actionButton.closest("tr");
-    if (!affectedRow || !affectedRow.dataset.id) return;
+    if (!affectedRow || !affectedRow.dataset.code) return;
 
-    const productId = affectedRow.dataset.id;
+    const productCode = affectedRow.dataset.code;
     
     if (actionButton.classList.contains("fa-angle-up")) {
-        storeApp.changeProductStock(productId, 1);
+        storeApp.changeProductStock(productCode, 1);
     }
 
     if (actionButton.classList.contains("fa-angle-down")) {
-        storeApp.changeProductStock(productId, -1);
+        storeApp.changeProductStock(productCode, -1);
     }
 
     if (actionButton.classList.contains("fa-pen")) {
@@ -101,22 +141,9 @@ function activateButton(event) {
     }
 
     if (actionButton.classList.contains("fa-trash-can")) {
-        storeApp.deleteProductFromStore(productId);
+        form.reset();
+        storeApp.deleteProductFromStore(productCode);
     }
     
     event.stopPropagation();
 }
-
-
-// document.getElementById("form-delprod").addEventListener("submit", (event) => {
-//     event.preventDefault();
-//     const id = document.getElementById("delprod-id").value;
-//     storeApp.deleteProductFromStore(id);
-// });
-
-// document.getElementById("form-stockprod").addEventListener("submit", (event) => {
-//     event.preventDefault();
-//     const id = document.getElementById("stockprod-id").value;
-//     const units = Number(document.getElementById("stockprod-uds").value);
-//     storeApp.changeProductStock(id, units);
-// });
