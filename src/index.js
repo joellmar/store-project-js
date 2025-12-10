@@ -1,4 +1,4 @@
-import {Controller} from "./controller/controller.js";
+import { Controller } from "./controller/controller.js";
 
 const storeApp = new Controller();
 const form = document.getElementById("form-prod");
@@ -43,11 +43,11 @@ form.addEventListener("reset", (event) => {
     }
 });
 
-inputs.forEach(input => 
-    input.addEventListener("blur", (event) => 
+inputs.forEach(input =>
+    input.addEventListener("blur", (event) =>
         storeApp.validateField(event.target)
     )
-);  
+);
 
 const tbody = document.querySelector("#store tbody");
 
@@ -66,9 +66,9 @@ function validateForm() {
 }
 
 function handleAddProduct() {
-    const {code, name, price, units} = getFormData();
+    const { code, name, price, units } = getFormData();
     storeApp.addProductToStore(code, name, price, units);
-    
+
     inputs.forEach(input => {
         input.classList.remove("is-valid");
         input.classList.add("border-primary");
@@ -78,14 +78,14 @@ function handleAddProduct() {
 }
 
 function handleEditProduct() {
-    const {code, name, price, units} = getFormData();
+    const { code, name, price, units } = getFormData();
     storeApp.changeProductInStore(code, name, price, units);
-    
+
     inputs.forEach(input => {
         input.classList.remove("is-valid");
         input.classList.add("border-primary");
     });
-    
+
     storeApp.loadAddForm();
     form.reset();
 }
@@ -108,11 +108,11 @@ function showIcons(event) {
     if (!actionsCell) return;
 
     const actionButtons = actionsCell.querySelectorAll(".fa-solid");
-    
+
     actionButtons.forEach(button => {
         if (event.type === "mouseover") {
             button.classList.remove("invisible");
-            
+
         } else if (event.type === "mouseout") {
             button.classList.add("invisible")
         }
@@ -127,7 +127,7 @@ function activateButton(event) {
     if (!affectedRow || !affectedRow.dataset.code) return;
 
     const productCode = affectedRow.dataset.code;
-    
+
     if (actionButton.classList.contains("fa-angle-up")) {
         storeApp.changeProductStock(productCode, 1);
     }
@@ -144,6 +144,7 @@ function activateButton(event) {
         form.reset();
         storeApp.deleteProductFromStore(productCode);
     }
-    
+
     event.stopPropagation();
+
 }

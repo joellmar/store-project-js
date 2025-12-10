@@ -65,7 +65,7 @@ export class View {
                 row.children[2].textContent = product.units;
                 row.children[3].textContent = product.price + " €";
                 row.children[4].textContent = product.productImport() + " €";
-            
+
                 row.dataset.name = product.name;
                 row.dataset.units = product.units;
                 row.dataset.price = product.price;
