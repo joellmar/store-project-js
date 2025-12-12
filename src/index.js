@@ -1,5 +1,7 @@
 import { Controller } from "./controller/controller.js";
 
+"use strict";
+
 const storeApp = new Controller();
 const form = document.getElementById("form-prod");
 
@@ -39,7 +41,10 @@ form.addEventListener("reset", (event) => {
     // Si el formulario está en modo edición, cargamos los valores del producto en el form.
     if (submitButton.classList.contains("edit-product")) {
         event.preventDefault();
+        storeApp.view.clearValidationStyles(form);
         storeApp.loadEditForm(form);
+    } else {
+        storeApp.view.clearValidationStyles(form);
     }
 });
 
@@ -137,14 +142,34 @@ function activateButton(event) {
     }
 
     if (actionButton.classList.contains("fa-pen")) {
+        storeApp.view.clearValidationStyles(form);
         storeApp.loadEditForm(affectedRow);
     }
 
     if (actionButton.classList.contains("fa-trash-can")) {
-        form.reset();
+        if (form.dataset.code === productCode) {
+            form.reset();
+            storeApp.view.clearValidationStyles(form);
+            storeApp.loadAddForm();
+
+            delete form.dataset.code;
+            delete form.dataset.name;
+            delete form.dataset.price;
+            delete form.dataset.units;
+        }
+
         storeApp.deleteProductFromStore(productCode);
     }
 
     event.stopPropagation();
+}
 
+function resetFormState() {
+    form.reset();
+    storeApp.view.clearValidationStyles(form);
+
+    /**
+     * ! Averiguar que hace el delete y por qué tiene esta sintaxis
+     */
+    // delete form.dataset.code;
 }

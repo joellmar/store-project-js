@@ -1,5 +1,5 @@
-import {Store} from "../model/store.js";
-import {View} from "../view/view.js";
+import { Store } from "../model/store.js";
+import { View } from "../view/view.js";
 
 export class Controller {
     constructor() {
@@ -10,7 +10,7 @@ export class Controller {
     addProductToStore(code, name, price, units) {
         const existingProduct = this.store.products.find(product => product.name.toLowerCase() === name.toLowerCase());
 
-        if(existingProduct) {
+        if (existingProduct) {
             this.view.renderErrorMessage("Error: this product is already in the store.");
             return false;
         }
@@ -23,13 +23,13 @@ export class Controller {
 
         return newProduct;
     }
-    
+
     deleteProductFromStore(code) {
         let deletedProduct = this.store.findProduct(code);
 
         if (!deletedProduct) {
             this.view.renderErrorMessage("Error: this product is not in the store.");
-            
+
             return false;
         }
 
@@ -45,16 +45,16 @@ export class Controller {
             }
 
             this.store.changeProductUnits(code, -deletedProduct.units);
-        } 
+        }
 
-            
+
         this.store.delProduct(code);
 
         this.view.renderDelProduct(code);
         this.view.renderStoreImport(this.store.totalImport());
-        
+
         return deletedProduct;
-        
+
     }
 
     changeProductStock(code, units) {
@@ -62,7 +62,7 @@ export class Controller {
 
         if (!modifiedProduct) {
             this.view.renderErrorMessage("Error: this product is not in the store.");
-
+            
             return false;
         }
 
@@ -81,7 +81,7 @@ export class Controller {
     }
 
     changeProductInStore(code, name, price, units) {
-       
+
         let modifiedProduct = this.store.findProduct(code);
 
         if (!modifiedProduct) {
@@ -90,7 +90,7 @@ export class Controller {
         }
 
         this.store.editProduct(code, name, price, units);
-        
+
         this.view.renderEditProduct(modifiedProduct);
         this.view.renderStoreImport(this.store.totalImport());
 
@@ -104,7 +104,7 @@ export class Controller {
 
         formHeading.textContent = "Editar producto";
         button.textContent = "Cambiar";
-        
+
         document.getElementById("prod-code").value = element.dataset.code;
         document.getElementById("prod-name").value = element.dataset.name;
         document.getElementById("prod-price").value = element.dataset.price;
@@ -115,8 +115,8 @@ export class Controller {
         form.dataset.price = document.getElementById("prod-price").value;
         form.dataset.units = document.getElementById("prod-uds").value;
 
-        button.classList.remove("add-product");
-        button.classList.add("edit-product");
+        button.classList.remove("add-product", "btn-primary");
+        button.classList.add("edit-product", "btn-warning");
     }
 
     loadAddForm() {
@@ -126,15 +126,20 @@ export class Controller {
         formHeading.textContent = "Nuevo producto";
         button.textContent = "Añadir";
 
-        button.classList.remove("edit-product");
-        button.classList.add("add-product");
+        document.getElementById("prod-code").value = "";
+        document.getElementById("prod-name").value = "";
+        document.getElementById("prod-price").value = "";
+        document.getElementById("prod-uds").value = "";
+
+        button.classList.remove("edit-product", "btn-warning");
+        button.classList.add("add-product", "btn-primary");
     }
 
     validateField(input) {
         let message = null
 
         if (input.validity.valueMissing) {
-            
+
             message = "El campo es obligatorio";
         }
 

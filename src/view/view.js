@@ -111,4 +111,15 @@ export class View {
             feedbackDiv.textContent = "";
         }
     }
+
+    // Limpia los estilos de validación (verde/rojo) y mensajes de error de un formulario.
+    clearValidationStyles(form) {
+        const inputs = form.querySelectorAll("input");
+        inputs.forEach(input => {
+            input.classList.remove("is-valid", "is-invalid");
+            input.classList.add("border-primary");
+            const feedback = input.parentElement.querySelector(".invalid-feedback");
+            if (feedback) feedback.textContent = "";
+        })
+    }
 }
